@@ -1,0 +1,70 @@
+@charset "UTF-8";
+
+* {-webkit-text-size-adjust:none;}
+html, body {width:100%;height:100%;margin:0;padding:0;font-size:100%;}
+body, input, textarea, button {font-family: 'Noto Sans KR', sans-serif;font-size:16px;font-weight:300;color:#333;line-height:1.5;letter-spacing:-0.5px;}
+body {scroll-behavior:smooth;background-color:#fff;}
+
+article, aside, details, figcaption, figure, footer, header, main, menu, nav, section, summary, canvas {display:block;}
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {margin:0;padding:0;border:0;box-sizing:border-box;vertical-align:top;}
+
+i, em, address, cite {font-style:normal;}
+b, strong {font-weight:500;}
+img {border:0;}
+nav, ul, ol, li {margin:0;padding:0;list-style:none;}
+
+a:link, a:active, a:hover, a:visited, active, hover {outline:0;text-decoration:none;color:#000;}
+a, button {text-decoration:none;
+  -moz-transition:all 0.3s ease-in-out;
+  -ms-transition:all 0.3s ease-in-out;
+  -o-transition:all 0.3s ease-in-out;
+  transition:all 0.3s ease-in-out;
+}
+
+button, input, optgroup, select, textarea {color:inherit;font:inherit;margin:0;padding:0;outline:none;box-sizing:border-box;}
+button {overflow:visible;}
+button, select {text-transform:none;}
+button, input[type="button"], input[type="reset"], input[type="submit"] {-webkit-appearance:button;cursor:pointer;}
+button[disabled], input[disabled] {cursor:default;}
+button::-moz-focus-inner, input::-moz-focus-inner {border:0;padding:0;}
+
+input {line-height:normal;-webkit-appearance:none;border:none;}
+input[type="checkbox"], input[type="radio"] {box-sizing:border-box;padding:0;display:none;}
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { height:auto; }
+input[type="search"] { -webkit-appearance:textfield; -moz-box-sizing:content-box; -webkit-box-sizing:content-box; box-sizing:content-box; }
+input[type="search"]::-webkit-search-cancel-button, input[type="search"]::-webkit-search-decoration { -webkit-appearance:none; }
+input::-webkit-input-placeholder { color:#999; }
+input::-webkit-moz-placeholder { color:#999; }
+input:-moz-placeholder { color:#999; }
+input::-moz-placeholder { color:#999; }
+input:-ms-input-placeholder { color:#999; }
+
+textarea {width:100%;height:100%;}
+textarea::-webkit-input-placeholder { color:#999; }
+textarea::-webkit-moz-placeholder { color:#999; }
+textarea:-moz-placeholder { color:#999; }
+textarea::-moz-placeholder { color:#999; }
+textarea:-ms-input-placeholder { color:#999; }
+fieldset {border:0;margin:0;padding:0;}
+legend {border:0;padding:0;display:none;}
+textarea {overflow:auto;-webkit-appearance:none;}
+input:focus, button:focus, textarea:focus {outline:none;}
+
+table {width:100%;border-collapse:collapse;border-spacing:0;}
+
+select, textarea,
+input[type='text'], input[type='reset'], input[type='submit'],
+input[type='password'], input[type='number'], input[type='search'], input[type='button'] {vertical-align:top;}

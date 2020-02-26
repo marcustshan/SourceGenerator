@@ -1,4 +1,4 @@
-# dgns-nsm
+# source-generator
 
 ## Project setup
 ```

@@ -1,0 +1,9 @@
+@charset "UTF-8";
+
+body {user-select: none;}
+div#app {height: 100%;}
+div.wrapper {width: 100%; height: calc(100% - 60px); background-color: #f1f1f1; padding: 10px;}
+
+button {border:none; background:none; padding: 5px 10px; background-color: #435057; border: 1px solid #637077; color: #f1f1f1; font-weight: 600;}
+
+.bold {font-weight: 600;}
