@@ -9,7 +9,11 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const settings = new Settings({
   defaults: {
     windowSize: { width: 1700, height: 800 },
-    targetPath: ''
+    targetPath: '',
+    controllerPackageName: 'controller',
+    servicePackageName: 'service',
+    modelPackageName: 'model',
+    daoPackageName: 'dao'
   }
 })
 
@@ -66,6 +70,30 @@ function createWindow() {
   })
   ipcMain.on('get_targetPath', (event) => {
     event.returnValue = settings.get('targetPath')
+  })
+  ipcMain.on('set_controllerPackageName', (event, controllerPackageName) => {
+    settings.set('controllerPackageName', controllerPackageName)
+  })
+  ipcMain.on('get_controllerPackageName', (event) => {
+    event.returnValue = settings.get('controllerPackageName')
+  })
+  ipcMain.on('set_servicePackageName', (event, servicePackageName) => {
+    settings.set('servicePackageName', servicePackageName)
+  })
+  ipcMain.on('get_servicePackageName', (event) => {
+    event.returnValue = settings.get('servicePackageName')
+  })
+  ipcMain.on('set_modelPackageName', (event, modelPackageName) => {
+    settings.set('modelPackageName', modelPackageName)
+  })
+  ipcMain.on('get_modelPackageName', (event) => {
+    event.returnValue = settings.get('modelPackageName')
+  })
+  ipcMain.on('set_daoPackageName', (event, daoPackageName) => {
+    settings.set('daoPackageName', daoPackageName)
+  })
+  ipcMain.on('get_daoPackageName', (event) => {
+    event.returnValue = settings.get('daoPackageName')
   })
 }
 
