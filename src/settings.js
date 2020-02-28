@@ -5,7 +5,7 @@ const fs = require('fs')
 export class Settings {
   constructor (opts) {
     const userDataPath = (electron.app || electron.remote.app).getPath('userData')
-    this.path = path.join(userDataPath, opts.configName + '.json')
+    this.path = path.join(userDataPath, 'settings.json')
 
     if (!fs.existsSync(this.path)) {
       fs.writeFileSync(this.path, '', 'utf8')

@@ -1,0 +1,4 @@
+package {{PackageName}}.{{LowerModuleName}}.service;
+
+public interface {{UpperModuleName}}Service {
+}

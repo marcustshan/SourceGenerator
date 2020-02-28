@@ -1,0 +1,15 @@
+package {{PackageName}}.{{LowerModuleName}}.service;
+
+import {{PackageName}}.{{LowerModuleName}}.{{DaoPackageName}}.{{UppderModuleName}}Dao;
+import org.springframework.stereotype.Service;
+
+@Service
+public class {{UppderModuleName}}ServiceImpl implements {{UppderModuleName}}Service {
+
+    private {{UppderModuleName}}Dao {{LowerModuleName}}Dao;
+
+    public {{UppderModuleName}}ServiceImpl({{UppderModuleName}}Dao {{LowerModuleName}}Dao)
+    {
+        this.{{LowerModuleName}}Dao = {{LowerModuleName}}Dao;
+    }
+}

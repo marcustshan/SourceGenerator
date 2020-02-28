@@ -1,0 +1,16 @@
+package {{PackageName}}.{{LowerModuleName}}.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+import {{PackageName}}.{{LowerModuleName}}.service.{{UpperModuleName}}Service;
+
+@RestController
+public class {{UpperModuleName}}Controller {
+
+		private final String URI_PREFIX = "/{{LowerModuleName}}";
+
+		public {{UpperModuleName}}Service {{LowerModuleName}}Service;
+
+    public {{UpperModuleName}}Controller({{UpperModuleName}}Service {{LowerModuleName}}Service) {
+				this.{{LowerModuleName}}Service = {{LowerModuleName}}Service;
+    }
+}

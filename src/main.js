@@ -11,6 +11,10 @@ require('./assets/css/common.css')
 
 Vue.config.productionTip = false
 
+Vue.prototype.alert = (msg) => {
+  alert(msg, 'Source Generator')
+}
+
 new Vue({
   router,
   store,

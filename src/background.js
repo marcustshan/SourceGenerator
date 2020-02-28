@@ -9,11 +9,15 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 const settings = new Settings({
   defaults: {
     windowSize: { width: 1700, height: 800 },
-    targetPath: '',
-    controllerPackageName: 'controller',
-    servicePackageName: 'service',
-    modelPackageName: 'model',
-    daoPackageName: 'dao'
+    generatorInfo: {
+      targetPath: '',
+      packageName: '',
+      moduleName: '',
+      controllerPackageName: 'controller',
+      servicePackageName: 'service',
+      modelPackageName: 'model',
+      daoPackageName: 'dao'
+    }
   }
 })
 
@@ -65,35 +69,27 @@ function createWindow() {
     win = null
   })
 
-  ipcMain.on('set_targetPath', (event, targetPath) => {
-    settings.set('targetPath', targetPath)
+  ipcMain.on('set_generatorInfo', (event, generatorInfo) => {
+    settings.set('generatorInfo', generatorInfo)
   })
-  ipcMain.on('get_targetPath', (event) => {
-    event.returnValue = settings.get('targetPath')
+  ipcMain.on('get_generatorInfo', (event) => {
+    event.returnValue = settings.get('generatorInfo')
   })
-  ipcMain.on('set_controllerPackageName', (event, controllerPackageName) => {
-    settings.set('controllerPackageName', controllerPackageName)
-  })
-  ipcMain.on('get_controllerPackageName', (event) => {
-    event.returnValue = settings.get('controllerPackageName')
-  })
-  ipcMain.on('set_servicePackageName', (event, servicePackageName) => {
-    settings.set('servicePackageName', servicePackageName)
-  })
-  ipcMain.on('get_servicePackageName', (event) => {
-    event.returnValue = settings.get('servicePackageName')
-  })
-  ipcMain.on('set_modelPackageName', (event, modelPackageName) => {
-    settings.set('modelPackageName', modelPackageName)
-  })
-  ipcMain.on('get_modelPackageName', (event) => {
-    event.returnValue = settings.get('modelPackageName')
-  })
-  ipcMain.on('set_daoPackageName', (event, daoPackageName) => {
-    settings.set('daoPackageName', daoPackageName)
-  })
-  ipcMain.on('get_daoPackageName', (event) => {
-    event.returnValue = settings.get('daoPackageName')
+
+  /*
+  const fs = require('fs');
+  const path = require('path')
+  let templatePath = path.join(__statics, '/templates');
+  fs.readFile(`${templatePath}/ControllerTemplate.tmp`, data => { templates.controllerTemplate = data; });
+  fs.readFile(`${templatePath}/ServiceTemplate.tmp`, data => { templates.serviceTemplate = data; });
+  fs.readFile(`${templatePath}/ServiceImplTemplate.tmp`, data => { templates.serviceImplTemplate = data; });
+  fs.readFile(`${templatePath}/DaoTemplate.tmp`, data => { templates.daoTemplate = data; });
+  fs.readFile(`${templatePath}/ModelTemplate.tmp`, data => { templates.modelTemplate = data; });
+  fs.readFile(`${templatePath}/MapperTemplate.tmp`, data => { templates.mapperTemplate = data; });
+  */
+
+  ipcMain.on('get_Templates', (event) => {
+    event.returnValue = templates;
   })
 }
 
@@ -126,4 +122,67 @@ if (isDevelopment) {
       app.quit()
     })
   }
+}
+
+
+
+const templates = {
+  Controller: `package {{PackageName}}.{{LowerModuleName}}.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+import {{PackageName}}.{{LowerModuleName}}.service.{{UpperModuleName}}Service;
+
+@RestController
+public class {{UpperModuleName}}Controller {
+
+    private final String URI_PREFIX = "/{{LowerModuleName}}";
+
+    public {{UpperModuleName}}Service {{LowerModuleName}}Service;
+
+    public {{UpperModuleName}}Controller({{UpperModuleName}}Service {{LowerModuleName}}Service) {
+        this.{{LowerModuleName}}Service = {{LowerModuleName}}Service;
+    }
+}`,
+  Service: `package {{PackageName}}.{{LowerModuleName}}.service;
+
+public interface {{UpperModuleName}}Service {
+}`,
+  ServiceImpl: `package {{PackageName}}.{{LowerModuleName}}.service;
+
+import {{PackageName}}.{{LowerModuleName}}.{{DaoPackageName}}.{{UpperModuleName}}Dao;
+import org.springframework.stereotype.Service;
+  
+@Service
+public class {{UpperModuleName}}ServiceImpl implements {{UpperModuleName}}Service {
+
+    private {{UpperModuleName}}Dao {{LowerModuleName}}Dao;
+
+    public {{UpperModuleName}}ServiceImpl({{UpperModuleName}}Dao {{LowerModuleName}}Dao)
+    {
+        this.{{LowerModuleName}}Dao = {{LowerModuleName}}Dao;
+    }
+}`,
+  Dao: `package {{PackageName}}.{{LowerModuleName}}.{{DaoPackageName}};
+
+import org.springframework.stereotype.Repository;
+  
+@Repository
+public interface {{UpperModuleName}}Dao {
+}`,
+  Model: `package {{PackageName}}.{{LowerModuleName}}.model;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.apache.ibatis.type.Alias;
+  
+@Alias("{{LowerModuleName}}")
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class {{UpperModuleName}} {
+}`,
+  Mapper: `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="{{PackageName}}.{{LowerModuleName}}.{{DaoPackageName}}.{{UpperModuleName}}Dao">
+
+</mapper>`
 }

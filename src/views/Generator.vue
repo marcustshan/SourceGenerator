@@ -9,31 +9,31 @@
             <button @click="fnSelectDirectory" class="btn_folder">
               경로 선택
             </button>
-            <input type="text" v-model="targetPath" />
+            <input type="text" v-model="generatorInfo.targetPath" />
           </li>
           <li class="input_item">
             <label class="input_label">패키지 명 ex) com.dm.test</label>
-            <input type="text" v-model="packageName" />
+            <input type="text" v-model="generatorInfo.packageName" />
           </li>
           <li class="input_item">
             <label class="input_label">모듈 명</label>
-            <input type="text" v-model="moduleName" />
+            <input type="text" v-model="generatorInfo.moduleName" />
           </li>
           <li class="input_item">
             <label class="input_label">Controller 패키지 명</label>
-            <input type="text" v-model="controllerPackageName" />
+            <input type="text" v-model="generatorInfo.controllerPackageName" />
           </li>
           <li class="input_item">
             <label class="input_label">Service 패키지 명</label>
-            <input type="text" v-model="servicePackageName" />
+            <input type="text" v-model="generatorInfo.servicePackageName" />
           </li>
           <li class="input_item">
             <label class="input_label">Model(DTO) 패키지 명</label>
-            <input type="text" v-model="modelPackageName" />
+            <input type="text" v-model="generatorInfo.modelPackageName" />
           </li>
           <li class="input_item">
             <label class="input_label">DAO 패키지 명</label>
-            <input type="text" v-model="daoPackageName" />
+            <input type="text" v-model="generatorInfo.daoPackageName" />
           </li>
           <li class="input_item">
             <label class="input_label">ServiceImpl 패키지 별도</label>
@@ -57,57 +57,163 @@
 
   export default {
     name: 'generator',
+    computed: {
+      validated () {
+        let validated = true;
+        Object.keys(this.generatorInfo).some(key => {
+          if(this.fnIsNull(this.generatorInfo[key])) {
+            validated = false;
+            return validated;
+          }
+        });
+
+        return  validated;
+      }
+    },
     data () {
       return {
-        targetPath: '',
-        packageName: '',
-        moduleName: '',
-        controllerPackageName: '',
-        servicePackageName: '',
-        modelPackageName: '',
-        daoPackageName: '',
+        generatorInfo: {
+          targetPath: '',
+          packageName: '',
+          moduleName: '',
+          controllerPackageName: '',
+          servicePackageName: '',
+          modelPackageName: '',
+          daoPackageName: ''
+        },
+        templates: {},
         eachPackage: false
       }
     },
     methods: {
-      fnGenerate () {
-        console.log(this);
+      fnGeneratorSource() {
+        const fs = require('fs')
+        if(!fs.existsSync(this.generatorInfo.targetPath)) {
+          this.alert('대상 경로가 존재하지 않습니다.');
+          return;
+        }
+
+        this.$store.dispatch('setNowLoading', true);
+
+        let basePath = `${this.generatorInfo.targetPath}/java/${this.generatorInfo.packageName.split('.').join('/')}/${this.generatorInfo.moduleName.toLowerCase()}`;
+        if(!fs.existsSync(basePath)) {
+          fs.mkdirSync(basePath);
+        }
+
+        let controllerPath = `${basePath}/controller`;
+        let servicePath = `${basePath}/service`;
+        let modelPath = `${basePath}/model`;
+        let daoPath = `${basePath}/dao`;
+        let mapperPath = `${this.generatorInfo.targetPath}/resources/mybatis/sql/${this.generatorInfo.moduleName.toLowerCase()}`;
+
+        let upperModuleName = `${this.generatorInfo.moduleName[0].toUpperCase()}${this.generatorInfo.moduleName.substring(1)}`
+        let lowerModuleName = `${this.generatorInfo.moduleName.toLowerCase()}`;
+
+        let templatesCopy = JSON.parse(JSON.stringify(this.templates));
+
+        for(let key in templatesCopy) {
+          templatesCopy[key] = templatesCopy[key].replaceAll('{{UpperModuleName}}', upperModuleName);
+          templatesCopy[key] = templatesCopy[key].replaceAll('{{LowerModuleName}}', lowerModuleName);
+          templatesCopy[key] = templatesCopy[key].replaceAll('{{PackageName}}', this.generatorInfo.packageName);
+          templatesCopy[key] = templatesCopy[key].replaceAll('{{DaoPackageName}}', this.generatorInfo.daoPackageName);
+
+          console.log(templatesCopy[key]);
+          /*
+          templatesCopy[key].split('{{UpperModuleName}}').join(upperModuleName);
+          templatesCopy[key].split('{{LowerModuleName}}').join(lowerModuleName);
+          templatesCopy[key].split('{{PackageName}}').join(this.generatorInfo.packageName);
+          templatesCopy[key].split('{{DaoPackageName}}').join(this.generatorInfo.daoPackageName);
+          */
+        }
+
+        if(!fs.existsSync(controllerPath)) {
+          fs.mkdirSync(controllerPath);
+        }
+        fs.writeFileSync(`${controllerPath}/${upperModuleName}Controller.java`, templatesCopy['Controller'], 'utf-8')
+
+        if(!fs.existsSync(servicePath)) {
+          fs.mkdirSync(servicePath);
+        }
+        fs.writeFileSync(`${servicePath}/${upperModuleName}Service.java`, templatesCopy['Service'], 'utf-8')
+        let serviceImplPath = `${servicePath}`;
+        if(this.eachPackage) {
+          serviceImplPath = `${servicePath}/impl`;
+          fs.mkdirSync(serviceImplPath);
+        }
+        fs.writeFileSync(`${serviceImplPath}/${upperModuleName}ServiceImpl.java`, templatesCopy['ServiceImpl'], 'utf-8')
+
+        if(!fs.existsSync(modelPath)) {
+          fs.mkdirSync(modelPath);
+        }
+        fs.writeFileSync(`${modelPath}/${upperModuleName}.java`, templatesCopy['Model'], 'utf-8')
+
+        if(!fs.existsSync(daoPath)) {
+          fs.mkdirSync(daoPath);
+        }
+        fs.writeFileSync(`${daoPath}/${upperModuleName}Dao.java`, templatesCopy['Dao'], 'utf-8')
+
+        if(!fs.existsSync(mapperPath)) {
+          fs.mkdirSync(mapperPath);
+        }
+        fs.writeFileSync(`${mapperPath}/${upperModuleName}.xml`, templatesCopy['Mapper'], 'utf-8')
+
+        this.$store.dispatch('setNowLoading', false);
       },
-      fnSelectDirectory () {
+      fnIsNull(target) {
+        return !target || target.length < 1;
+      },
+      fnIsNotNull(target) {
+        return target && target.length > 0;
+      },
+      fnGenerate() {
+        if (!this.validated) {
+          return;
+        }
+
+        ipcRenderer.send('set_generatorInfo', this.generatorInfo);
+
+        this.templates = ipcRenderer.sendSync('get_Templates');
+        console.log(this.templates);
+        this.fnGeneratorSource();
+      },
+      fnSelectDirectory() {
         const { dialog } = require('electron').remote;
         let options = {
           title: 'main 폴더를 선택해주세요.',
-          defaultPath: this.targetPath,
+          defaultPath: this.generatorInfo.targetPath,
           buttonLabel: 'Select',
           properties: ['openDirectory']
         };
         dialog.showOpenDialog(options, (path) => {
           if (path && path.length > 0) {
-            this.targetPath = path[0];
+            this.generatorInfo.targetPath = path[0].split('\\').join('/');
+            ipcRenderer.send('set_generatorInfo', this.generatorInfo);
             this.fnSetPackageName();
-            ipcRenderer.send('set_targetPath', this.targetPath);
           }
         });
       },
-      fnSetPackageName () {
-        if (this.targetPath && this.targetPath.length < 1) {
+      fnSetPackageName() {
+        const fs = require('fs');
+        if (!this.generatorInfo.targetPath || this.generatorInfo.targetPath.length < 1) {
+          return;
+        }
+        if (!fs.existsSync(this.generatorInfo.targetPath)) {
           return;
         }
 
         let packageNames = [];
-        const fs = require('fs');
-        fs.readdir(this.targetPath, (error, dirs) => {
-          if (dirs.indexOf('java') > -1) {
-            fs.readdir(`${this.targetPath}\\java`, (error, dirs) => {
+        fs.readdir(this.generatorInfo.targetPath, (error, dirs) => {
+          if(dirs.indexOf('java') > -1) {
+            fs.readdir(`${this.generatorInfo.targetPath}\\java`, (error, dirs) => {
               if(dirs && dirs.length > 0) {
                 packageNames.push(dirs[0]);
-                fs.readdir(`${this.targetPath}\\java\\${packageNames[0]}`, (error, dirs) => {
+                fs.readdir(`${this.generatorInfo.targetPath}\\java\\${packageNames[0]}`, (error, dirs) => {
                   if(dirs && dirs.length > 0) {
                     packageNames.push(dirs[0]);
-                    fs.readdir(`${this.targetPath}\\java\\${packageNames[0]}\\${packageNames[1]}`, (error, dirs) => {
+                    fs.readdir(`${this.generatorInfo.targetPath}\\java\\${packageNames[0]}\\${packageNames[1]}`, (error, dirs) => {
                       if(dirs && dirs.length > 0) {
                         packageNames.push(dirs[0]);
-                        this.packageName = packageNames.join('.');
+                        this.generatorInfo.packageName = packageNames.join('.');
                       }
                     });
                   }
@@ -116,11 +222,22 @@
             })
           }
         });
+      },
+      fnInitValues() {
+        this.generatorInfo = ipcRenderer.sendSync('get_generatorInfo');
       }
     },
     mounted () {
-      this.targetPath = ipcRenderer.sendSync('get_targetPath');
+      String.prototype.replaceAll = function(search, replacement) {
+        let target = this;
+        return target.replace(new RegExp(search, 'g'), replacement);
+      };
+
+      this.fnInitValues();
       this.fnSetPackageName();
+
+      this.templates = ipcRenderer.sendSync('get_Templates');
+      console.log(this.templates);
     }
   }
 </script>

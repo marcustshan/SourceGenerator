@@ -1,0 +1,11 @@
+package {{PackageName}}.{{LowerModuleName}}.model;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.apache.ibatis.type.Alias;
+
+@Alias("{{LowerModuleName}}")
+@Data
+@EqualsAndHashCode(callSuper = false)
+public class {{UpperModuleName}} {
+}

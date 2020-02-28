@@ -1,0 +1,7 @@
+package {{PackageName}}.{{LowerModuleName}}.{{DaoPackageName}};
+
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface {{UppderModuleName}}Dao {
+}
